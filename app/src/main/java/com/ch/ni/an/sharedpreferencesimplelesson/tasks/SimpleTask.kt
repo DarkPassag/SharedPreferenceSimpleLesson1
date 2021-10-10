@@ -10,18 +10,21 @@ import java.util.concurrent.Future
 private val executorService = Executors.newCachedThreadPool()
 private val handler = Handler(Looper.getMainLooper())
 
+
 class SimpleTask<T>(
     private val callable: Callable<T>
 ) :Task<T> {
 
+
     private val future: Future<*>
+    private var result: Result<T> = PendingResult()
 
     init {
         future = executorService.submit {
-            try{
-
+          result = try{
+                SuccessResult(callable.call())
             } catch (e:Throwable){
-
+                ErrorResult(e)
             }
         }
     }
