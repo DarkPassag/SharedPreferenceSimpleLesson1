@@ -1,6 +1,8 @@
 package com.ch.ni.an.sharedpreferencesimplelesson.model
 
 import com.bumptech.glide.Glide.init
+import com.ch.ni.an.sharedpreferencesimplelesson.UserNotFoundExceptions
+import com.ch.ni.an.sharedpreferencesimplelesson.tasks.Task
 import com.github.javafaker.Faker
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,11 +30,20 @@ class UserService() {
     }
 
 
-        fun getUsers(): List<User>{
+        fun loadUsers(): Task<Unit>{
             return users
         }
 
-        fun deleteUser(user: User){
+    fun getById(id: Long): Task<UserDetails> {
+        val user = users.firstOrNull { id == it.id } ?: throw UserNotFoundExceptions()
+        return UserDetails(
+            user = user,
+            details =  Faker.instance().lorem().paragraphs(3).joinToString ("\n\n")
+        )
+
+    }
+
+        fun deleteUser(user: User): Task<Unit>{
             val indexToDelete = users.indexOfFirst { it.id == user.id }
             if(indexToDelete != -1){
                 users = ArrayList(users)
@@ -41,7 +52,7 @@ class UserService() {
             }
         }
 
-        fun moveUser(user: User, moveBy: Int){
+        fun moveUser(user: User, moveBy: Int): Task<Unit>{
             val oldIndex = users.indexOfFirst { it.id == user.id }
             if(oldIndex == -1) return
             val newIndex = oldIndex + moveBy
