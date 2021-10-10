@@ -26,22 +26,56 @@ class SimpleTask<T>(
             } catch (e:Throwable){
                 ErrorResult(e)
             }
+            notifyListener()
         }
     }
 
+    private var valueCallback: Callback<T>? = null
+    private var errorCallback: Callback<Throwable>? = null
+
     override fun onSuccess(callback: Callback<T>): Task<T> {
-        TODO("Not yet implemented")
+        this.valueCallback = callback
+        notifyListener()
+        return this
     }
 
+
+
     override fun onError(callback: Callback<Throwable>): Task<T> {
-        TODO("Not yet implemented")
+        this.errorCallback = callback
+        notifyListener()
+        return this
     }
 
     override fun cancel() {
-        TODO("Not yet implemented")
+        clear()
+        future.cancel(true)
     }
 
     override fun await(): T {
-        TODO("Not yet implemented")
+        future.get()
+        val result = this.result
+        if(result is SuccessResult) return result.data
+        else throw (result as ErrorResult).error
+    }
+
+    private fun notifyListener(){
+        handler.post{
+            val result = this.result
+            val callback = this.valueCallback
+            val errorCallback = this.errorCallback
+            if(result is SuccessResult && callback != null){
+                callback(result.data)
+                clear()
+            } else if(result is ErrorResult && errorCallback != null){
+                errorCallback.invoke(result.error)
+                clear()
+            }
+        }
+    }
+
+    private fun clear(){
+        valueCallback = null
+        errorCallback = null
     }
 }

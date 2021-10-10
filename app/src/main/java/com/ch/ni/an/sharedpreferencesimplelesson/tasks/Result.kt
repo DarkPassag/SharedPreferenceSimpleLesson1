@@ -1,9 +1,14 @@
 package com.ch.ni.an.sharedpreferencesimplelesson.tasks
 
-sealed class Result<T>
+sealed class Result<T>{
+    fun <R> map(mapper: (T) -> R): Result<R>{
+        if(this is SuccessResult) return SuccessResult(mapper(data))
+        return this as Result<R>
+    }
+}
 
 class SuccessResult<T>(
-    data: T
+   val data: T
 ): Result<T>()
 
 class ErrorResult<T>(

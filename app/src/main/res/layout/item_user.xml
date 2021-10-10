@@ -54,6 +54,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+        android:id="@+id/itemProgressBar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="4dp"
+        app:layout_constraintTop_toTopOf="@+id/moreImage"
+        app:layout_constraintBottom_toBottomOf="@+id/moreImage"
+        app:layout_constraintStart_toStartOf="@+id/moreImage"
+        app:layout_constraintEnd_toEndOf="@+id/moreImage"
+        android:visibility="gone"/>
+
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier"
         android:layout_width="wrap_content"
